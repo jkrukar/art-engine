@@ -852,6 +852,7 @@ module.exports = {
   startCreating,
   DNA_DELIMITER,
   createDna,
+  cleanName,
   constructLayerToDna,
   isDnaUnique,
   loadLayerImg,
