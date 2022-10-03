@@ -27,22 +27,55 @@ const hashImages = true;
 
 const layerConfigurations = [
   {
-    growEditionSizeTo: 11,
+    growEditionSizeTo: 5,
     // namePrefix: "Monkey", Use to add a name to Metadata `name:`
     layersOrder: [
-      { name: "Background" },
-      {
-        name: "Back Accessory",
-        // options: {
-        //   bypassDNA: true,
-        // },
+      { name: "Background",
       },
-      { name: "Head" },
-      { name: "Clothes" },
-      { name: "Eyes" },
-      { name: "Hair" },
-      { name: "Head Accessory" },
-      { name: "Shirt Accessories" },
+      { name: "ThronePositioner",
+        options: {
+            bypassDNA: true,
+          }
+      },
+      { 
+        name: "Male Pose",
+        trait: "Pose",
+       },      
+      { name: "Shoes",
+      },
+      
+      { name: "Male Arms",
+        options: {
+            bypassDNA: true,
+          }
+      },
+       { name: "Male Clothes",
+      trait: "Clothes",
+      },
+      { name: "Thrones",
+      },
+      { name: "Male Heads",
+      trait: "Head",
+      },
+      { name: "Items Left",
+      },
+      { name: "Items Right",
+      },
+      { name: "Hands",
+        options: {
+            bypassDNA: true,
+          }
+      },
+            { name: "epithets",
+      },
+      { name: "titles",
+      },
+      { name: "collectionColumn",
+        options: {
+          bypassDNA:true,
+        }
+      },
+
     ],
   },
   // {
@@ -65,6 +98,22 @@ const layerConfigurations = [
  * accidentally set incompatibilities for the _wrong_ item.
  */
 const incompatible = {
+  noThronePosition: ["Sitting Pose","blockThrones","chairs","highChairs"],
+  highChairPosition: ["Standing Pose","blockThrones","chairs","noThrone"],
+  chairPosition: ["Standing Pose","blockThrones","highChairs","noThrone"],
+  blockThronePosition: ["Standing Pose","chairs","highChairs","noThrone"],
+  "Standing Pose": ["Sitting Clothes","Sitting Shoes"],
+  "Sitting Pose": ["Standing Clothes","Standing Shoes"],
+  "background3": ["Sitting Pose","highChairPosition","chairPosition","blockThronePosition"],
+  pose1MaleBody: ["Right2-3-5-7-9-10","Right4-6","Left3-7-9","Left4-5-6-10","peltSkirt3","peltSkirt4","peltSkirt5"],
+  pose2MaleBody: ["Right1","Right4-6","Left3-7-9","Left4-5-6-10","peltSkirt3","peltSkirt4","peltSkirt5"],
+  pose3MaleBody: ["Right1","Right4-6","Left1-2","Left4-5-6-10","peltSkirt1,2","peltSkirt4","peltSkirt5"],
+  pose4MaleBody: ["Right2-3-5-7-9-10","Right1","Left1-2","Left3-7-9","peltSkirt1,2","peltSkirt3","peltSkirt5"],
+  pose5MaleBody: ["Right1","Right4-6","Left1-2","Left3-7-9","peltSkirt1,2","peltSkirt3","peltSkirt4"],
+  pose6MaleBody: ["Right2-3-5-7-9-10","Right1","Left1-2","Left3-7-9","leopard7,8,9","leopard10"],
+  pose7MaleBody: ["Right1","Right4-6","Left1-2","Left4-5-6-10","leopard6","leopard10"],
+  pose9MaleBody: ["Right1","Right4-6","Left1-2","Left4-5-6-10","leopard6","leopard10"],
+  pose10MaleBody: ["Right1","Right4-6","Left1-2","Left3-7-9","leopard7,8,9","leopard6"],
   //   Red: ["Dark Long"],
   //   // directory incompatible with directory example
   //   White: ["rare-Pink-Pompadour"],
@@ -81,6 +130,26 @@ const incompatible = {
  */
 const forcedCombinations = {
   // floral: ["MetallicShades", "Golden Sakura"],
+  pose1MaleBody: ["pose1MaleArms","pose1Hands"],
+  pose2MaleBody: ["pose2MaleArms","pose2Hands"],
+  pose3MaleBody: ["pose3MaleArms","pose3Hands"],
+  pose4MaleBody: ["pose4-6MaleArms","pose4-6Hands"],
+  pose5MaleBody: ["pose5-10MaleArms","pose5-10Hands"],
+  pose6MaleBody: ["pose4-6MaleArms","pose4-6Hands"],
+  pose7MaleBody: ["pose7MaleArms","pose7Hands"],
+  pose9MaleBody: ["pose9MaleArms","pose9Hands"],
+  pose10MaleBody: ["pose5-10MaleArms","pose5-10Hands"],
+
+
+  //   pose1MaleBody: ["pose1MaleArms","Right1"],
+  // pose2MaleBody: ["pose2MaleArms","Right2-3-5-7-9-10"],
+  // pose3MaleBody: ["pose3MaleArms","Right2-3-5-7-9-10"],
+  // pose4MaleBody: ["pose4-6MaleArms","Right4-6"],
+  // pose5MaleBody: ["pose5-10MaleArms","Right2-3-5-7-9-10"],
+  // pose6MaleBody: ["pose4-6MaleArms","Right4-6"],
+  // pose7MaleBody: ["pose7MaleArms","Right2-3-5-7-9-10"],
+  // pose9MaleBody: ["pose9MaleArms","Right2-3-5-7-9-10"],
+  // pose10MaleBody: ["pose5-10MaleArms","Right2-3-5-7-9-10"],
 };
 
 const shuffleLayerConfigurations = false;
@@ -91,15 +160,15 @@ const shuffleLayerConfigurations = false;
  * clean-filename: trait-value override pairs. Wrap filenames with spaces in quotes.
  */
 const traitValueOverrides = {
-  Helmet: "Space Helmet",
-  "gold chain": "GOLDEN NECKLACE",
+  // Helmet: "Space Helmet",
+  // "gold chain": "GOLDEN NECKLACE",
 };
 
 const debugLogs = true;
 
 const format = {
-  width: 512,
-  height: 512,
+  width: 1264,
+  height: 1264,
 };
 
 const background = {

@@ -13,6 +13,12 @@ const { createCanvas, loadImage } = require(path.join(
 ));
 
 console.log(path.join(basePath, "/src/config.js"));
+
+const {
+  test,
+  GetGlobalPosition,
+} = require(path.join(basePath,'/src/positioner.js'));
+
 const {
   background,
   baseUri,
@@ -161,6 +167,8 @@ const getElements = (path, layer) => {
         ? layer.zindex
         : "";
 
+      const relativePosition = layer.relativePosition? layer.relativePosition : ""
+
       const element = {
         sublayer,
         weight,
@@ -171,6 +179,7 @@ const getElements = (path, layer) => {
         filename: i,
         path: `${path}${i}`,
         zindex,
+        relativePosition
       };
 
       if (sublayer) {
@@ -236,6 +245,7 @@ const processTraitOverrides = (trait) => {
 
 const layersSetup = (layersOrder) => {
   const layers = layersOrder.map((layerObj, index) => {
+
     return {
       id: index,
       name: layerObj.name,
@@ -249,7 +259,7 @@ const layersSetup = (layersOrder) => {
       bypassDNA:
         layerObj.options?.["bypassDNA"] !== undefined
           ? layerObj.options?.["bypassDNA"]
-          : false,
+          : false
     };
   });
 
@@ -323,6 +333,7 @@ const addAttributes = (_element) => {
 };
 
 const loadLayerImg = async (_layer) => {
+
   return new Promise(async (resolve) => {
     // selected elements is an array.
     const image = await loadImage(`${_layer.path}`).catch((err) =>
@@ -336,12 +347,20 @@ const drawElement = (_renderObject, mainCanvas) => {
   const layerCanvas = createCanvas(format.width, format.height);
   const layerctx = layerCanvas.getContext("2d");
 
+  // console.log("\n_renderObject: " + JSON.stringify(_renderObject) + "\n");
+
+  // const dx = _renderObject.relativePosition? _renderObject.relativePosition.dx : 0
+  // const dy = _renderObject.relativePosition? _renderObject.relativePosition.dy : 0
+
+
+  const positionData = GetGlobalPosition(_renderObject);
+
   layerctx.drawImage(
     _renderObject.loadedImage,
-    0,
-    0,
-    format.width,
-    format.height
+    positionData.canvasCoord[0],
+    positionData.canvasCoord[1],
+    _renderObject.loadedImage.width,
+    _renderObject.loadedImage.height
   );
 
   addAttributes(_renderObject);
@@ -702,16 +721,21 @@ const paintLayers = (canvasContext, renderObjectArray, layerData) => {
   debugLogs ? console.log("Clearing canvas") : null;
   canvasContext.clearRect(0, 0, format.width, format.height);
 
+  console.log("\nlayerData: " + JSON.stringify(layerData) + "\n");
+
+  console.log("\n\nTEST: " + test);
+
   const { abstractedIndexes, _background } = layerData;
 
   renderObjectArray.forEach((renderObject) => {
     // one main canvas
     // each render Object should be a solo canvas
     // append them all to main canbas
+
     canvasContext.globalAlpha = renderObject.layer.opacity;
     canvasContext.globalCompositeOperation = renderObject.layer.blendmode;
     canvasContext.drawImage(
-      drawElement(renderObject, canvasContext),
+      drawElement(renderObject,canvasContext),
       0,
       0,
       format.weight,
@@ -774,6 +798,27 @@ const outputFiles = (abstractedIndexes, layerData) => {
   );
 };
 
+const loadImgFromPath = async (imagePath) => {
+
+  console.log("Load number column at: " + imagePath);
+
+  return new Promise(async (resolve) => {
+    // selected elements is an array.
+    const image = await loadImage(`${imagePath}`).catch((err) =>
+      console.log(chalk.redBright("failed to load number column"))
+    );
+    resolve(image);
+  });
+};
+
+const addNumberColumn = async (mainCanvas,numberColumnImg) => {
+
+    mainCanvas.globalCompositeOperation = "source-over";
+    // mainCanvas.drawImage(numberColumn, 0, 0, format.width, format.height);
+    mainCanvas.drawImage(numberColumnImg, 1103, 114);
+    console.log("Drew number column!");
+}
+
 const startCreating = async () => {
   let layerConfigIndex = 0;
   let editionCount = 1;
@@ -793,6 +838,7 @@ const startCreating = async () => {
     ? console.log("Editions left to create: ", abstractedIndexes)
     : null;
   while (layerConfigIndex < layerConfigurations.length) {
+
     const layers = layersSetup(
       layerConfigurations[layerConfigIndex].layersOrder
     );
@@ -812,6 +858,9 @@ const startCreating = async () => {
           loadedElements.push(loadLayerImg(layer));
         });
 
+        let imagePath = path.join(basePath, "layers/numberColumn",(editionCount)+".png");
+        let numberColumnImg = await loadImgFromPath(imagePath)
+
         await Promise.all(loadedElements).then((renderObjectArray) => {
           const layerData = {
             newDna,
@@ -820,6 +869,7 @@ const startCreating = async () => {
             _background: background,
           };
           paintLayers(ctxMain, renderObjectArray, layerData);
+          addNumberColumn(ctxMain,numberColumnImg)
           outputFiles(abstractedIndexes, layerData);
         });
 
